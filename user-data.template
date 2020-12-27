@@ -1,0 +1,55 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+hostname: ___instance_name___
+manage_etc_hosts: true
+
+resize_rootfs: true
+growpart:
+    mode: auto
+    devices: ["/"]
+    ignore_growroot_disabled: false
+
+users:
+  - name: fransic
+    gecos: "Francisco Sicardi"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video,input,systemd-journal
+    lock_passwd: false
+    ssh_pwauth: false
+    chpasswd: { expire: false }
+    ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMYYxqwTfrFMQHnIScQHCnifWNRf/ivzxe4FrPnXry1FADqz6xbp8JRY96mgrkB+RFZZ5cIFI5dyFiHCwNsh3m8zywojRbilTu7KqEfWxxu6VTrEap88W10TtUzr5HBLOec8XPn7DBzm656LFD81Vb2di5LsVIlfgtO2jM1SfeLVzr559E0wyBo8pr+VYHSESwYUWTVrDzbBfKfPa1BuRF5K1d5j4Q9h9FA9iR59x+012diNFlP7iCV4/hwoBc3etJ8ySWVlZ/7reEh/6ZXYxjZ0QoSYHVMETuNCxqZTPBrjcr8dCZC556bidf6t1LGYBSQ2W3XAwd65gKEqDrr4vX
+ 
+disable_root: true
+
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+packages:
+  - ntp
+  - vim
+  - rsync
+  - ctags
+  - tmux
+  - tmuxp
+  - sysstat
+
+locale: "en_US.UTF-8"
+
+timezone: "America/Buenos_Aires"
+
+runcmd:
+  - 'curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -'
+  - 'echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list'
+  - 'apt-get update'
+  - 'apt-get -y install kubeadm kubectl kubelet'
+  - 'apt-mark hold kubelet kubeadm kubectl'
+  - 'git clone --recursive https://github.com/fsicardir/.dotfiles.git /home/fransic/.dotfiles'
+  - 'chown -R fransic:fransic /home/fransic/.dotfiles'
+  - '/home/fransic/.dotfiles/bootstrap -d/home/fransic'
+  - 'systemctl reboot'
+
