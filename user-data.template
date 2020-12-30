@@ -33,21 +33,16 @@ packages:
   - ntp
   - vim
   - rsync
-  - ctags
   - tmux
   - tmuxp
   - sysstat
+  - wget
 
 locale: "en_US.UTF-8"
 
 timezone: "America/Buenos_Aires"
 
 runcmd:
-  - 'curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -'
-  - 'echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list'
-  - 'apt-get update'
-  - 'apt-get -y install kubeadm kubectl kubelet'
-  - 'apt-mark hold kubelet kubeadm kubectl'
   - 'git clone --recursive https://github.com/fsicardir/.dotfiles.git /home/fransic/.dotfiles'
   - 'chown -R fransic:fransic /home/fransic/.dotfiles'
   - '/home/fransic/.dotfiles/bootstrap -d/home/fransic'
